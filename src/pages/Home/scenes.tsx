@@ -19,7 +19,6 @@ import { VariableHide } from '@grafana/schema';
 import { FilterExpressionSceneObject } from './FilterExpressionSceneObject';
 import { GoToExploreScene } from './GoToExploreButton';
 import { LogsMetricsSwitchScene } from './LogsMetricsSwitchScene';
-import { LOKI_DEV_UID, PROMETHEUS_DEV_UID } from '../../constants';
 
 export function getBasicScene() {
   let scene: EmbeddedScene;
@@ -49,8 +48,6 @@ export function getBasicScene() {
     name: 'ds',
     label: 'Data source',
     pluginId: 'loki',
-    value: LOKI_DEV_UID, // this is the loki dev uid
-    hide: VariableHide.hideVariable,
   });
 
   const DATASOURCE_REF = {
@@ -88,7 +85,7 @@ export function getBasicScene() {
 
   window.addEventListener('message', (event) => {
     if (event.data.type === 'setLabels') {
-      datasourceVariable.setState({ value: LOKI_DEV_UID });
+      datasourceVariable.setState({ pluginId: 'loki' });
       filterObject.setState({ expression: '' });
       metricBreakout = '';
       const { labels, meta } = event.data.data;
@@ -148,7 +145,7 @@ export function getBasicScene() {
     }
 
     if (event.data.type === 'setLineFilter') {
-      datasourceVariable.setState({ value: LOKI_DEV_UID });
+      datasourceVariable.setState({ pluginId: 'loki' });
       metricBreakout = '';
       filterObject.setState({ expression: event.data.data.text });
       typeSwitcher.setState({ type: 'logs' });
@@ -158,9 +155,9 @@ export function getBasicScene() {
       metricBreakout = event.data.data.text;
       typeSwitcher.setState({ type: event.data.data.type });
       if (event.data.data.type === 'prometheus') {
-        datasourceVariable.setState({ value: PROMETHEUS_DEV_UID });
+        datasourceVariable.setState({ pluginId: 'prometheus' });
       } else {
-        datasourceVariable.setState({ value: LOKI_DEV_UID });
+        datasourceVariable.setState({ pluginId: 'loki' });
       }
     }
   });
@@ -186,7 +183,7 @@ export function getBasicScene() {
 
     const sub3 = typeSwitcher.subscribeToState((newState) => {
       if (newState.type === 'logs') {
-        datasourceVariable.setState({ value: LOKI_DEV_UID });
+        datasourceVariable.setState({ pluginId: 'loki' });
         metricBreakout = '';
         body = logsBody;
       } else {
